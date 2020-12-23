@@ -1,6 +1,6 @@
 ---
+os: linux
 dist:
-- trusty
 - focal
 language: python
 python:
@@ -13,7 +13,7 @@ env:
 - VERSION=2.9.7
 
 # Use the new container infrastructure
-sudo: false
+#sudo: false
 
 # Install ansible
 addons:
