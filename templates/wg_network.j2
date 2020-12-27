@@ -1,6 +1,6 @@
 {% set local_key_private = lookup('file', '/etc/wireguard/' + wg_network + '.priv') -%}
 {% set local_key_public = lookup('file', '/etc/wireguard/' + wg_network + '.pub') -%}
-{% set local_record = (wg_peers | selectattr("key_public", "==", local_key_public) | list | first) -%}
+{% set local_record = (wg_peers | selectattr("key_public", "==", local_key_public) | list | first | default({})) -%}
 [Interface]
 PrivateKey = {{ local_key_private }}
 MTU = 1400
