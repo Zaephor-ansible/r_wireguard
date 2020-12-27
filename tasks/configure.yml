@@ -1,0 +1,40 @@
+---
+- name: "{{ wg_network }}: Create private key"
+  shell:
+    cmd: "wg genkey > /etc/wireguard/{{ wg_network }}.priv"
+    creates: "/etc/wireguard/{{ wg_network }}.priv"
+
+- name: "{{ wg_network }} : Set public key"
+  shell:
+    cmd: "wg pubkey < /etc/wireguard/{{ wg_network }}.priv > /etc/wireguard/{{ wg_network }}.pub"
+    creates: "/etc/wireguard/{{ wg_network }}.pub"
+
+- name: "{{ wg_network }} : Configuration"
+  template:
+    src: "wg_network.j2"
+    dest: "/etc/wireguard/{{ wg_network }}.conf"
+    owner: "root"
+    group: "root"
+    mode: "0600"
+    force: "yes"
+  register: wg_network_configfile
+
+- name: "{{ wg_network }} : Verify permissions"
+  file:
+    path: "{{ item.path }}"
+    owner: "root"
+    group: "root"
+    mode: "{{ item.mode }}"
+  with_items:
+  - { path: "/etc/wireguard/{{ wg_network }}.priv", mode: "0600" }
+  - { path: "/etc/wireguard/{{ wg_network }}.conf", mode: "0600" }
+  - { path: "/etc/wireguard/{{ wg_network }}.pub", mode: "0600" }
+
+- name: "{{ wg_network }} : Enable system service"
+  systemd:
+    daemon_reload: yes
+    enabled: yes
+    name: "wg-quick@{{network}}"
+    state: "{{ 'restarted' if (wg_network_configfile.changed) else 'started' }}"
+    masked: no
+

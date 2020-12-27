@@ -1,0 +1,15 @@
+---
+- name: Install wireguard
+  apt:
+    pkg:
+    - wireguard
+    state: present
+
+- name: Ensure packet forwarding is enabled
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    sysctl_set: yes
+    state: present
+    reload: yes
+

@@ -1,0 +1,34 @@
+{% set local_key_private = lookup('file', '/etc/wireguard/' + wg_network + '.priv') -%}
+{% set local_key_public = lookup('file', '/etc/wireguard/' + wg_network + '.pub') -%}
+{% set local_record = (wg_peers | selectattr("key_public",local_key_public) | list | first) -%}
+[Interface]
+PrivateKey = {{ local_key_private }}
+MTU = 1400
+{% if 'address' in local_record %}
+Address = {{ local_record.address }}
+{% endif %}
+{% if 'endpoint' in local_record %}
+ListenPort = {{ wg_port }}
+{% endif %}
+{% if (wg_mode | default(false)) and wg_mode == "bridge" %}
+PostUp   = iptables -w -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT; iptables -t nat -A POSTROUTING -o {{ ansible_default_ipv4.interface }} -j MASQUERADE
+PostDown = iptables -w -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING -o {{ ansible_default_ipv4.interface }} -j MASQUERADE
+{% endif %}
+
+{% for peer in wg_peers %}
+{% if peer.key_public != local_key_public %}
+{% if ('endpoint' in local_record) or (peer is defined and 'endpoint' in peer and peer.endpoint|length) %}
+# {{ peer.id|default('') }}
+[Per]
+PublicKey = {{ peer.key_public }}
+PersistentKeepalive = 25
+{% if 'endpoint' in peer and peer.endpoint|length %}
+Endpoint = {{ peer.endpoint }}:{{ port }}
+{% endif %}
+{% if 'address' in peer or 'allowed' in peer %}
+AllowedIPs = {{ ( peer.address|default(false)|list + peer.allowed|default(false)|list ) | select | list | join(',') }}
+{% endif %}
+
+{% endif %}
+{% endif %}
+{% endfor %}
