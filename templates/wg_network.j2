@@ -23,7 +23,7 @@ PostDown = iptables -w -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j 
 PublicKey = {{ peer.key_public }}
 PersistentKeepalive = 25
 {% if 'endpoint' in peer and peer.endpoint|length %}
-Endpoint = {{ peer.endpoint }}:{{ port }}
+Endpoint = {{ peer.endpoint }}:{{ wg_port }}
 {% endif %}
 {% if 'address' in peer or 'allowed' in peer %}
 AllowedIPs = {{ ( peer.address|default(false)|list + peer.allowed|default(false)|list ) | select | list | join(',') }}
