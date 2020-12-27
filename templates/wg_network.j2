@@ -26,7 +26,8 @@ PersistentKeepalive = 25
 Endpoint = {{ peer.endpoint }}:{{ wg_port }}
 {% endif %}
 {% if 'address' in peer or 'allowed' in peer %}
-AllowedIPs = {{ ( peer.address|default(false)|select|list + peer.allowed|default(false)|select|list ) | select | list | join(',') }}
+{#TODO: get both address and allowed to accept both string and/or arrays, and to typecase them properly #}
+AllowedIPs = {{ ( [peer.address|default(false)]|select|list + peer.allowed|default([false])|select|list ) | select | list | join(',') }}
 {% endif %}
 
 {% endif %}

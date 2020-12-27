@@ -34,7 +34,7 @@
   systemd:
     daemon_reload: yes
     enabled: yes
-    name: "wg-quick@{{network}}"
+    name: "wg-quick@{{wg_network}}"
     state: "{{ 'restarted' if (wg_network_configfile.changed) else 'started' }}"
     masked: no
 
