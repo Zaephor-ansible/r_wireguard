@@ -2,4 +2,6 @@
 # defaults file for r_wireguard
 wg_port: "51820"
 wg_mode: "bridge"
+wg_mtu: "1400"
+wg_keepalive: "21"
 wg_peers: []

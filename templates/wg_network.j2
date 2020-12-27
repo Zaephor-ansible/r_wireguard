@@ -3,7 +3,7 @@
 {% set local_record = (wg_peers | selectattr("key_public", "==", local_key_public) | list | first | default({})) -%}
 [Interface]
 PrivateKey = {{ local_key_private }}
-MTU = 1400
+MTU = {{ wg_mtu }}
 {% if 'address' in local_record %}
 Address = {{ local_record.address }}
 {% endif %}
@@ -21,7 +21,7 @@ PostDown = iptables -w -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j 
 # {{ peer.id|default('') }}
 [Peer]
 PublicKey = {{ peer.key_public }}
-PersistentKeepalive = 25
+PersistentKeepalive = {{ wg_keepalive }}
 {% if 'endpoint' in peer and peer.endpoint|length %}
 Endpoint = {{ peer.endpoint }}:{{ wg_port }}
 {% endif %}
