@@ -19,7 +19,7 @@ PostDown = iptables -w -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j 
 {% if peer.key_public != local_key_public %}
 {% if ('endpoint' in local_record) or (peer is defined and 'endpoint' in peer and peer.endpoint|length) %}
 # {{ peer.id|default('') }}
-[Per]
+[Peer]
 PublicKey = {{ peer.key_public }}
 PersistentKeepalive = 25
 {% if 'endpoint' in peer and peer.endpoint|length %}
