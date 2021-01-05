@@ -10,9 +10,14 @@ Address = {{ local_record.address }}
 {% if 'endpoint' in local_record %}
 ListenPort = {{ wg_port }}
 {% endif %}
-{% if (wg_mode | default(false)) and wg_mode == "bridge" %}
+{% if wg_mode | default(false) %}
+{% if wg_mode == "bridge" %}
 PostUp   = iptables -w -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT; iptables -t nat -A POSTROUTING -o {{ ansible_default_ipv4.interface }} -j MASQUERADE
 PostDown = iptables -w -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING -o {{ ansible_default_ipv4.interface }} -j MASQUERADE
+{% elif wg_mode == "relay" %}
+PostUp   = iptables -w -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT; iptables -t nat -A POSTROUTING -o %i -j MASQUERADE
+PostDown = iptables -w -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING -o %i -j MASQUERADE
+{% endif %}
 {% endif %}
 
 {% for peer in wg_peers %}

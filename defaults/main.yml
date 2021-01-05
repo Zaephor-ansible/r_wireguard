@@ -1,6 +1,7 @@
 ---
 # defaults file for r_wireguard
 wg_port: "51820"
+# bridge (link VPN and default network) / relay (forward traffic within vpn nodes only) / point
 wg_mode: "bridge"
 wg_mtu: "1400"
 wg_keepalive: "21"
