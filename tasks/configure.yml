@@ -1,15 +1,18 @@
 ---
 - name: "{{ wg_network }}: Create private key"
+  become: yes
   shell:
     cmd: "wg genkey > /etc/wireguard/{{ wg_network }}.priv"
     creates: "/etc/wireguard/{{ wg_network }}.priv"
 
 - name: "{{ wg_network }} : Set public key"
+  become: yes
   shell:
     cmd: "wg pubkey < /etc/wireguard/{{ wg_network }}.priv > /etc/wireguard/{{ wg_network }}.pub"
     creates: "/etc/wireguard/{{ wg_network }}.pub"
 
 - name: "{{ wg_network }} : Configuration"
+  become: yes
   template:
     src: "wg_network.j2"
     dest: "/etc/wireguard/{{ wg_network }}.conf"
@@ -20,6 +23,7 @@
   register: wg_network_configfile
 
 - name: "{{ wg_network }} : Verify permissions"
+  become: yes
   file:
     path: "{{ item.path }}"
     owner: "root"
@@ -31,6 +35,7 @@
   - { path: "/etc/wireguard/{{ wg_network }}.pub", mode: "0600" }
 
 - name: "{{ wg_network }} : Enable system service"
+  become: yes
   systemd:
     daemon_reload: yes
     enabled: yes

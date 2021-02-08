@@ -1,11 +1,13 @@
 ---
 - name: Install wireguard
+  become: yes
   apt:
     pkg:
     - wireguard
     state: present
 
 - name: Ensure packet forwarding is enabled
+  become: yes
   sysctl:
     name: net.ipv4.ip_forward
     value: '1'
