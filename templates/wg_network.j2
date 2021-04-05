@@ -12,11 +12,13 @@ ListenPort = {{ wg_port }}
 {% endif %}
 {% if wg_mode | default(false) %}
 {% if wg_mode == "bridge" %}
-PostUp   = iptables -w -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT; iptables -t nat -A POSTROUTING -o {{ ansible_default_ipv4.interface }} -j MASQUERADE
-PostDown = iptables -w -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING -o {{ ansible_default_ipv4.interface }} -j MASQUERADE
+#PostUp   = iptables -w -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT; iptables -t nat -A POSTROUTING -o {{ ansible_default_ipv4.interface }} -j MASQUERADE
+#PostDown = iptables -w -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING -o {{ ansible_default_ipv4.interface }} -j MASQUERADE
+PostUp   = iptables -w -A FORWARD -i %i -j ACCEPT; iptables -w -A FORWARD -o %i -j ACCEPT; iptables -w -t nat -A POSTROUTING -o %i -j MASQUERADE
+PostDown = iptables -w -D FORWARD -i %i -j ACCEPT; iptables -w -D FORWARD -o %i -j ACCEPT; iptables -w -t nat -D POSTROUTING -o %i -j MASQUERADE
 {% elif wg_mode == "relay" %}
-PostUp   = iptables -w -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT; iptables -t nat -A POSTROUTING -o %i -j MASQUERADE
-PostDown = iptables -w -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING -o %i -j MASQUERADE
+PostUp   = iptables -w -A FORWARD -i %i -j ACCEPT; iptables -w -A FORWARD -o %i -j ACCEPT; iptables -w -t nat -A POSTROUTING -o %i -j MASQUERADE
+PostDown = iptables -w -D FORWARD -i %i -j ACCEPT; iptables -w -D FORWARD -o %i -j ACCEPT; iptables -w -t nat -D POSTROUTING -o %i -j MASQUERADE
 {% endif %}
 {% endif %}
 
